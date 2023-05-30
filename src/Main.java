@@ -1,21 +1,54 @@
-import org.apache.commons.math4.legacy.linear.RealMatrix;
 import org.apache.commons.math4.legacy.linear.MatrixUtils;
+import org.apache.commons.math4.legacy.linear.RealMatrix;
+import org.apache.commons.math4.legacy.linear.RealVector;
+
+import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
+        // linear system of equations
         double[][] tableau = {{10, 5, 30, 1, 0, 150}, {50, 200, 400, 0, 1, 1000}, {50, 150, 500, 0, 0, 0}};
+
+        // Number of variables to consider
+        int numVariables = 3;
 
         // Apply the simplex algorithm to the tableau
         RealMatrix resultMatrix = simplexAlgorithm(tableau);
 
+        ArrayList<Double> results = getResults(numVariables, resultMatrix);
+
         // Retrieve the results from the result matrix
         double maxProfit = resultMatrix.getEntry(resultMatrix.getRowDimension() - 1, resultMatrix.getColumnDimension() - 1) * -1;
-        double variableA = resultMatrix.getEntry(0, resultMatrix.getColumnDimension() - 1); // Spalten Check einbauen (wenn nur eine 1 und sonst 0, dann Wert der letzten Spalte, sonst 0)
-        double variableB = resultMatrix.getEntry(1, resultMatrix.getColumnDimension() - 1); // Spalten Check einbauen
-        double variableC = resultMatrix.getEntry(2, resultMatrix.getColumnDimension() - 1); // Spalten Check einbauen
+        double resultVar1 = results.get(0);
+        double resultVar2 = results.get(1);
+        double resultVar3 = results.get(2);
 
         // Print the results
-        System.out.println("Der Maximale Gewinn ist " + maxProfit + ", wenn von  Teddybär1 " + variableA + " Einheiten, von  Teddybär2 " + variableB + " Einheiten und von  Teddybär3 " + variableC + " Einheiten produziert werden.");
+        System.out.println("Der Maximale Gewinn ist " + maxProfit + ", wenn von\n  Teddybär1 " + resultVar1 + " Einheiten, von\n  Teddybär2 " + resultVar2 + " Einheiten und von\n  Teddybär3 " + resultVar3 + " Einheiten produziert werden.");
+    }
+
+    private static ArrayList<Double> getResults(int numVariables, RealMatrix resultMatrix) {
+        ArrayList<Double> results = new ArrayList<>();
+
+        for (int col = 0; col < numVariables; col++) {
+            RealVector columnVector = resultMatrix.getColumnVector(col);
+            int targetRow = -1;
+            for (int row = 0; row < resultMatrix.getRowDimension() - 1; row++) {
+                if ((columnVector.getEntry(row) == 1 || columnVector.getEntry(row) == 0) && targetRow == -1) {
+                    if (columnVector.getEntry(row) == 1) {
+                        targetRow = row;
+                    }
+                } else {
+                    break;
+                }
+            }
+            if (targetRow != -1) {
+                results.add(resultMatrix.getEntry(targetRow, resultMatrix.getColumnDimension() - 1));
+            } else {
+                results.add(0.0);
+            }
+        }
+        return results;
     }
 
     private static RealMatrix simplexAlgorithm(double[][] tableau) {
@@ -79,7 +112,6 @@ public class Main {
         for (int i = 0; i < matrix.getRowDimension() - 1; i++) {
             double ratio = matrix.getEntry(i, matrix.getColumnDimension() - 1) / column[i];
             if (column[i] > 0 && ratio < minRatio) {
-                //if (column[i] > 0 && ratio < minRatio) {
                 minRatio = ratio;
                 pivotRow = i;
             }
