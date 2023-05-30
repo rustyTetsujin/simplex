@@ -1,0 +1,74 @@
+public class Main {
+    public static void main(String[] args) {
+        double[][] tableau = {{5, 2, 1, 0, 30}, {2, 4, 0, 1, 48}, {-10, -8, 0, 0, 0}};
+
+        boolean fertig = false;
+        int pivotColumn = 0;
+        int pivotRow = 0;
+        double pivotElement = 0;
+        double faktor = 0;
+        double tmp = 0;
+
+
+        while (!fertig) {
+            // finde Pivotspalte raus
+            pivotColumn = getPivotColumn(tableau, pivotColumn);
+
+            // finde Pivotzeile raus
+            pivotRow = getPivotRow(tableau, pivotColumn);
+
+            // Pivotzeile neu berechnen mit Pivotelement auf 1 gebracht
+            pivotElement = tableau[pivotRow][pivotColumn];
+
+            for (int i = 0; i < tableau[pivotRow].length; i++) {
+                tableau[pivotRow][i] = tableau[pivotRow][i] / pivotElement;
+            }
+
+            // weitere Zeilen neu berechnen
+            for (int i = 0; i < tableau.length; i++) {
+                if (i != pivotRow) {
+                    faktor = tableau[i][pivotColumn];
+                    for (int j = 0; j < tableau[i].length; j++) {
+                        tableau[i][j] = tableau[i][j] - (faktor * tableau[pivotColumn][j]);
+                    }
+                }
+            }
+
+            // suche nach negativen Zahlen in der letzten Zeile
+            fertig = true;
+            for (int i = 0; i < tableau[tableau.length - 1].length; i++) {
+                if (tableau[tableau.length - 1][i] < 0) {
+                    fertig = false;
+                }
+            }
+        }
+
+        System.out.print("Der maximale Gewinn ist " + tableau[tableau.length - 1][tableau[tableau.length - 1].length - 1] + ", wenn man " + tableau[0][tableau[0].length - 1] + " von der ersten Variable und " + tableau[1][tableau[1].length - 1] + " von der zweiten nimmt.");
+    }
+
+    private static int getPivotRow(double[][] tableau, int pivotColumn) {
+        int pivotRow;
+        double tmp;
+        tmp = tableau[0][tableau[0].length - 1] / tableau[0][pivotColumn];
+        pivotRow = 0;
+
+        for (int i = 1; i < tableau.length - 1; i++) {
+            if (tableau[i][tableau[i].length - 1] / tableau[i][pivotColumn] < tmp) {
+                tmp = tableau[i][tableau[i].length - 1] / tableau[i][pivotColumn];
+                pivotRow = 1;
+            }
+        }
+        return pivotRow;
+    }
+
+    private static int getPivotColumn(double[][] tableau, int pivotColumn) {
+        pivotColumn = 0;
+
+        for (int i = 1; i < tableau[tableau.length - 1].length - 1; i++) {
+            if (tableau[tableau.length - 1][i] < tableau[tableau.length - 1][pivotColumn]) {
+                pivotColumn = i;
+            }
+        }
+        return pivotColumn;
+    }
+}
