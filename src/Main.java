@@ -53,6 +53,7 @@ public class Main {
             // Check for termination
             finished = true;
             lastRow = matrix.getRow(matrix.getRowDimension() - 1);
+
             for (double value : lastRow) {
                 if (value > 0) {
                     finished = false;
@@ -64,8 +65,8 @@ public class Main {
     }
 
     private static void subtractRows(RealMatrix matrix, int pivotColumn, int pivotRow, int row) {
-        double factor;
-        factor = matrix.getEntry(row, pivotColumn);
+        double factor = matrix.getEntry(row, pivotColumn);
+
         for (int column = 0; column < matrix.getColumnDimension(); column++) {
             matrix.setEntry(row, column, matrix.getEntry(row, column) - factor * matrix.getEntry(pivotRow, column));
         }
@@ -74,6 +75,7 @@ public class Main {
     private static int getPivotRow(RealMatrix matrix, int pivotColumn, int pivotRow) {
         double[] column = matrix.getColumn(pivotColumn);
         double minRatio = Double.MAX_VALUE;
+
         for (int i = 0; i < matrix.getRowDimension() - 1; i++) {
             double ratio = matrix.getEntry(i, matrix.getColumnDimension() - 1) / column[i];
             if (column[i] > 0 && ratio < minRatio) {
@@ -86,9 +88,9 @@ public class Main {
     }
 
     private static int getPivotColumn(RealMatrix matrix) {
-        int pivotColumn;
-        pivotColumn = 0;
+        int pivotColumn = 0;
         double[] lastRow = matrix.getRow(matrix.getRowDimension() - 1);
+
         for (int i = 1; i < lastRow.length - 1; i++) {
             if (lastRow[i] > lastRow[pivotColumn]) {
                 pivotColumn = i;
