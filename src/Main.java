@@ -15,20 +15,19 @@ public class Main {
         // Apply the simplex algorithm to the tableau
         RealMatrix resultMatrix = simplexAlgorithm(tableau);
 
+        // Retrieve the results from the result matrix
         ArrayList<Double> results = getResults(numVariables, resultMatrix);
 
-        // Retrieve the results from the result matrix
-        double maxProfit = resultMatrix.getEntry(resultMatrix.getRowDimension() - 1, resultMatrix.getColumnDimension() - 1) * -1;
-        double resultVar1 = results.get(0);
-        double resultVar2 = results.get(1);
-        double resultVar3 = results.get(2);
-
         // Print the results
-        System.out.println("Der Maximale Gewinn ist " + maxProfit + ", wenn von\n  Teddybär1 " + resultVar1 + " Einheiten, von\n  Teddybär2 " + resultVar2 + " Einheiten und von\n  Teddybär3 " + resultVar3 + " Einheiten produziert werden.");
+        System.out.println("Der Maximale Gewinn ist " + results.get(0) + ", wenn von\n  Teddybär1 " + results.get(1) + " Einheiten, von\n  Teddybär2 " + results.get(2) + " Einheiten und von\n  Teddybär3 " + results.get(3) + " Einheiten produziert werden.");
     }
 
     private static ArrayList<Double> getResults(int numVariables, RealMatrix resultMatrix) {
         ArrayList<Double> results = new ArrayList<>();
+
+        // add Maxprofit Element to the list
+        results.add((resultMatrix.getEntry(resultMatrix.getRowDimension() - 1,
+                resultMatrix.getColumnDimension() - 1)) * -1);
 
         for (int col = 0; col < numVariables; col++) {
             RealVector columnVector = resultMatrix.getColumnVector(col);
