@@ -32,13 +32,17 @@ public class Main {
 
         for (int col = 0; col < numVariables; col++) {
             RealVector columnVector = resultMatrix.getColumnVector(col);
+            // saves the row with the 1 in the column (col)
             int targetRow = -1;
+
             for (int row = 0; row < resultMatrix.getRowDimension() - 1; row++) {
+                // Check if value Element is 1 or 0 and not the only 1
                 if ((columnVector.getEntry(row) == 1 || columnVector.getEntry(row) == 0) && targetRow == -1) {
                     if (columnVector.getEntry(row) == 1) {
                         targetRow = row;
                     }
                 } else {
+                    // If there is anything besides 1 and 0 go to the next column
                     break;
                 }
             }
