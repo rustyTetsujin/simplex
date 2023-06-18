@@ -12,14 +12,79 @@ public class Main {
         // Number of variables to consider
         int numVariables = 3;
 
-        // Apply the simplex algorithm to the tableau
-        RealMatrix resultMatrix = simplexAlgorithm(tableau);
+        // start variables
+        boolean finished = false;
+        ArrayList<Double> results = null;
+        Double[][] tmpResults = new Double[numVariables][2];
+        // fill array
+        for (int i = 0; i < tmpResults.length; i++) {
+            tmpResults[i][0] = 0.0;
+            tmpResults[i][1] = 0.0;
+        }
 
-        // Retrieve the results from the result matrix
-        ArrayList<Double> results = getResults(numVariables, resultMatrix);
+        while (!finished) {
+
+            // Apply the simplex algorithm to the tableau
+            RealMatrix resultMatrix = simplexAlgorithm(tableau);
+
+            // Retrieve the results from the result matrix
+            results = getResults(numVariables, resultMatrix);
+            finished = true;
+
+
+            // Check if all Values are INT
+            for (int i = 1; i < results.size(); i++) {
+
+                // if not INT update tableau
+                if (results.get(i) % 1 != 0) {
+                    finished = false;
+
+                    // Update resources in tableau
+                    // Step 1: Remove used up resources
+                    tableau[0][5] = tableau[0][5] - (Math.floor(results.get(i)) * tableau[0][i-1]);
+                    tableau[1][5] = tableau[1][5] - (Math.floor(results.get(i)) * tableau[1][i-1]);
+
+                    // Step 2: Update tmpResults
+                    // Value-Pair: #Items / #Revenue
+                    tmpResults[i-1][0] = Math.floor(results.get(i));
+                    tmpResults[i-1][1] = Math.floor(results.get(i)) * tableau[2][i-1];
+
+                    // Step 3: Remove calculated variables
+                    tableau[0][i-1] = 0;
+                    tableau[1][i-1] = 0;
+                    tableau[2][i-1] = 0;
+
+                } else if (results.get(i) % 1 == 0 && results.get(i) > 0) {
+                    tmpResults[i-1][0] = results.get(i);
+                    tmpResults[i-1][1] = results.get(0);
+
+                }
+            }
+
+        }
+
+        // Sum revenue
+        double revenue = 0;
+        for (Double[] tmpResult : tmpResults) {
+            revenue += tmpResult[1];
+        }
+
+        // Update revenue in results
+        results.set(0, revenue);
+
+        // Update no. of items in results
+        for (int i = 1; i < results.size(); i++) {
+            results.set(i, tmpResults[i-1][0]);
+        }
 
         // Print the results
-        System.out.println("Der Maximale Gewinn ist " + results.get(0) + ", wenn von\n  Teddybär1 " + results.get(1) + " Einheiten, von\n  Teddybär2 " + results.get(2) + " Einheiten und von\n  Teddybär3 " + results.get(3) + " Einheiten produziert werden.");
+        System.out.println("Der Maximale Gewinn ist " + results.get(0) + ", wenn von");
+
+        for (int i = 0; i < numVariables; i++) {
+            System.out.println(" Teddybär" + (i+1) + " " + results.get(i+1));
+        }
+
+        System.out.println("Einheiten produziert werden.");
     }
 
     private static ArrayList<Double> getResults(int numVariables, RealMatrix resultMatrix) {
